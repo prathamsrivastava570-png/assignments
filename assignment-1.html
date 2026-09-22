@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        h2 {
+            margin-top: 0;
+            color: #333;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: bold;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .hidden {
+            display: none;
+        }
+        .question-box {
+            margin-bottom: 20px;
+        }
+        .options label {
+            display: block;
+            font-weight: normal;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Front Page: Details -->
+    <div id="details-page">
+        <h2>Quiz Portal</h2>
+        <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" id="name" placeholder="Enter your name" required>
+        </div>
+        <div class="form-group">
+            <label for="roll">Roll No.:</label>
+            <input type="text" id="roll" placeholder="Enter your roll no." required>
+        </div>
+        <div class="form-group">
+            <label for="section">Section:</label>
+            <input type="text" id="section" placeholder="Enter your section" required>
+        </div>
+        <button onclick="startQuiz()">Start Quiz</button>
+    </div>
+
+    <!-- Quiz Page -->
+    <div id="quiz-page" class="hidden">
+        <h2 id="quiz-title">Question 1 of 5</h2>
+        <div id="question-container" class="question-box">
+            <!-- Question content injected via JS -->
+        </div>
+        <button id="next-btn" onclick="nextQuestion()">Next</button>
+    </div>
+
+    <!-- Result Page -->
+    <div id="result-page" class="hidden">
+        <h2>Quiz Submitted!</h2>
+        <p>Thank you, <span id="res-name"></span>. Your responses have been recorded successfully.</p>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        {
+        question: "What does HTML stand for?",
+        options: [
+            "Hyper Text Markup Language",
+            "High Text Machine Language",
+            "Hyperlink Text Mark Language",
+            "Home Tool Markup Language"
+        ],
+        answer: "Hyper Text Markup Language"
+        },
+        {
+            question: "Which language is used for web styling?",
+            options: ["HTML", "JQuery", "CSS", "XML"],
+            answer: "CSS"
+        },
+        {
+        question: "Which tag is used to create a paragraph?",
+        options: ["p", "h1", "br", "div"],
+        answer: "p"
+        },
+        {
+            question: "Which tag is used for the biggest heading in HTML?",
+            options: ["h6", "head", "h1", "heading"],
+            answer: "h1"
+        },
+        {
+            question: "Inside which HTML element do we put JavaScript?",
+            options: ["js", "script", "javascript", "code"],
+            answer: "script"
+        }
+    ];
+
+    let currentQuestionIndex = 0;
+    let userData = {};
+
+    function startQuiz() {
+        const name = document.getElementById('name').value;
+        const roll = document.getElementById('roll').value;
+        const section = document.getElementById('section').value;
+
+        if (!name || !roll || !section) {
+            alert("Please fill in all details before starting.");
+            return;
+        }
+
+        userData = { name, roll, section };
+
+        document.getElementById('details-page').classList.add('hidden');
+        document.getElementById('quiz-page').classList.remove('hidden');
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        const q = questions[currentQuestionIndex];
+        document.getElementById('quiz-title').innerText = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
+        
+        let optionsHtml = '';
+        q.options.forEach((opt, index) => {
+            optionsHtml += `<label><input type="radio" name="option" value="${opt}"> ${opt}</label>`;
+        });
+
+        document.getElementById('question-container').innerHTML = `
+            <p><strong>${q.question}</strong></p>
+            <div class="options">${optionsHtml}</div>
+        `;
+
+        if (currentQuestionIndex === questions.length - 1) {
+            document.getElementById('next-btn').innerText = "Submit";
+        }
+    }
+
+    function nextQuestion() {
+        const selectedOption = document.querySelector('input[name="option"]:checked');
+        if (!selectedOption) {
+            alert("Please select an option!");
+            return;
+        }
+
+        // You can store selectedOption.value here if you want to grade it later.
+
+        currentQuestionIndex++;
+
+        if (currentQuestionIndex < questions.length) {
+            loadQuestion();
+        } else {
+            document.getElementById('quiz-page').classList.add('hidden');
+            document.getElementById('result-page').classList.remove('hidden');
+            document.getElementById('res-name').innerText = userData.name;
+        }
+    }
+</script>
+
+</body>
+</html>
